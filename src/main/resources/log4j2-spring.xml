@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="off" monitorInterval="1800">
+
+    <!-- 全局参数 -->
+    <Properties>
+        <Property name="consolePattern">%d{yyyy-MM-dd HH:mm:ss} %highlight{%5p} %style{%pid}{Magenta} --- [%15.15t] %style{%-60.60c{9.}}{Yellow} : %msg%n</Property>
+        <Property name="filePattern">%d{yyyy-MM-dd HH:mm:ss} %-5p %pid --- [%15.15t] %-60.60c{9.} : %msg%n</Property>
+
+        <Property name="displayName">squall1744</Property>
+    </Properties>
+
+    <Appenders>
+        <!--  输出控制台的配置 -->
+        <Console name="Console" target="SYSTEM_OUT">
+            <!--  控制台只输出level参数设置的级别及以上级别的信息（onMatch），其他的直接拒绝（onMismatch） -->
+            <ThresholdFilter level="trace" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="${consolePattern}" />
+        </Console>
+    <!-- 文件 每次运行程序会自动清空，由append属性决定 -->
+    <File name="error" fileName="/Users/shaoshuai/log/error/${displayName}_error.log" append="false">
+        <!-- 指定error 级别的日志 -->
+        <ThresholdFilter level="ERROR" onMatch="ACCEPT"
+                         onMismatch="DENY" />
+        <PatternLayout pattern="${filePattern}" />
+    </File>
+    <!-- 滚动文件 -->
+    <RollingFile name="rollingFile"
+                 fileName="/Users/shaoshuai/log/${displayName}.log"
+                 filePattern="/Users/shaoshuai/log/${displayName}_%d{yyyy-MM-dd}.log">
+        <PatternLayout pattern="${filePattern}" />
+        <!-- 按天划分 -->
+        <TimeBasedTriggeringPolicy />
+    </RollingFile>
+</Appenders>
+
+    <Loggers>
+<!--        日志整体的输出配置-->
+        <Root level="error">
+<!--            日志输出的媒介-->
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="error"/>
+        </Root>
+
+<!--        特定对象的Logger输出配置-->
+        <Logger name="org.springframework" level="info" additivity="true" >
+            <AppenderRef ref="rollingFile"/>
+        </Logger>
+        <Logger name="com.example.demo.dao" level="debug" additivity="true" >
+            <AppenderRef ref="rollingFile"/>
+        </Logger>
+    </Loggers>
+</Configuration>
